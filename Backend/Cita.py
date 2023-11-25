@@ -1,3 +1,20 @@
+# Manejar fechas con la librería datetime
+"""from datetime import datetime
+
+# datetime_str = '09/19/18 13:55:26'
+
+# dt = datetime.strptime(datetime_str, '%m/%d/%y %H:%M:%S')
+
+dt = datetime(2023, 1, 1, 0, 0)
+
+# getting the timestamp
+ts = datetime.timestamp(dt)
+print(ts)
+
+date_time = datetime.fromtimestamp(ts)
+
+print(date_time)"""
+
 class Cita:
     """Esta clase define el estado y comportamiento de una Cita"""
     # Constructor

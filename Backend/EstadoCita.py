@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class EstadoCita(Enum):
     CANCELADA = 1
     MODIFICADA = 2
