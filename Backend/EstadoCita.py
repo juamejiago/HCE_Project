@@ -1,6 +1,7 @@
 from enum import Enum
 from Persistencia import AdministradorDB
 
+
 class EstadoCita(Enum):
     CANCELADA = 1
     MODIFICADA = 2
@@ -9,10 +10,8 @@ class EstadoCita(Enum):
     ANUNCIADA = 5
     AGENDADA = 6
 
-
-class Estado:
     def __init__(self):
         self.instancia = AdministradorDB()
 
-    def modificar_estado_cita(self,id_cita,modificacion):
-        cambio = self.instancia.modificar_estado(id_cita,modificacion)
+    def modificar_estado_cita(self, id_cita, modificacion):
+        cambio = self.instancia.modificar_estado(id_cita, modificacion)

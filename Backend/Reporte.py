@@ -1,6 +1,5 @@
 # Importando las librerías y módulos requeridos
 import json
-from datetime import datetime
 from Persistencia import AdministradorDB
 from .ProfesionalSalud import ProfesionalSalud
 from .Paciente import Paciente
@@ -127,8 +126,8 @@ class Reporte:
             id_profesionalSalud_asociado = reg[3]
             tipo = reg[4]
             estado = reg[5]
-            fecha_inicio = datetime.fromtimestamp(reg[6]).strftime("%Y-%m-%d %H:%M")
-            fecha_finalizacion = datetime.fromtimestamp(reg[7]).strftime("%Y-%m-%d %H:%M")
+            fecha_inicio = reg[6]
+            fecha_finalizacion = reg[7]
 
             cita_instancia = Cita(id_cita, id_paciente_asociado, id_instalacion_asociada, id_profesionalSalud_asociado,
                                   tipo, estado, fecha_inicio, fecha_finalizacion)

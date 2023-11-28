@@ -98,7 +98,6 @@ def mostrar_menu_general():
 
             # Comprueba si el botón de cerrar sesión ha sido presionado
             if st.button("Cerrar sesión", type="primary"):
-
                 # Actualiza el estado de la variable dentro del diccionario de session_state a false
                 st.session_state["loggedin"] = False
 
@@ -182,11 +181,6 @@ def mostrar_inicio_sesion():
                     st.error("Usuario o contraseña incorrectos.")
 
 
-# Mostrar interfaz de salida de sesión
-def mostrar_salida_sesion():
-    pass
-
-
 if __name__ == "__main__":
     # Configurando el título de la página
     st.set_page_config(page_title="Módulo de gestión de citas")
@@ -205,7 +199,6 @@ if __name__ == "__main__":
         else:
             if st.session_state["loggedin"] and not st.session_state["reportin"]:
                 mostrar_menu_general()
-                mostrar_salida_sesion()
             elif st.session_state["loggedin"] and st.session_state["reportin"]:
                 mostrar_reporte()
             else:

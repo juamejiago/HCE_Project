@@ -1,4 +1,6 @@
+# Importando el módulo requerido
 from Persistencia import AdministradorDB
+
 
 class Cita:
     """Esta clase define el estado y comportamiento de una Cita"""
@@ -16,9 +18,8 @@ class Cita:
         self._fecha_inicio = fecha_inicio
         self._fecha_finalizacion = fecha_finalizacion
 
-
         # NO PONER ACÁ PORFA
-        #self.instancia = AdministradorDB()
+        # self.instancia = AdministradorDB()
 
     # Métodos de instancia
     def get_id(self):
@@ -74,7 +75,7 @@ class Cita:
         buscar otra fecha.'''
         consultarPacienteNuevo = self.instancia.consultar_pacientes()
         if consultarPacienteNuevo:
-            cambio = self.instancia.modifciar_paciente_cita(id_cita,pacienteNuevo)
+            cambio = self.instancia.modifciar_paciente_cita(id_cita, pacienteNuevo)
 
     def modificar_instalacion(self, id):
         '''La idea es consultar si la instalacion a modificar ya está asignada por medio de la clave foranea
@@ -83,7 +84,6 @@ class Cita:
         pass
 
     def modificar_tipo_cita(self):
-
         pass
 
     def modificar_fecha(self):
