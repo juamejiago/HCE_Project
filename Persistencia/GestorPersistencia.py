@@ -12,28 +12,33 @@ class AdministradorDB:
 
     # Constructor
     def __init__(self):
-        self.con = sq.connect("C:\\Users\\DELL\\PycharmProjects\\pythonProject8\\Persistencia\\HCE_DB.db")
+        self.con = sq.connect(AdministradorDB.db_name)
         self.cursor = self.con.cursor()
 
     # Métodos de instancia
+
+    # Método para registrar una cita en base de datos
     def crear_cita(self, paciente, instalacion, profesional, tipo, fi, ff):
-        sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, \
+        FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
         self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, 7, fi, ff))
         self.con.commit()
         id_cita = self.cursor.lastrowid
         sql = "INSERT INTO Estado (Cita_Asociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
         self.cursor.execute(sql, (id_cita, 6, "", fi, profesional))
         self.con.commit()
+
+    # Método para consultar una cita en base de datos
     def consultar_cita(self, id):
         cita = self.cursor.execute("SELECT * FROM Cita WHERE  ID= ?",
                                    (id,)).fetchall()
         return cita
-    def consultar_citas(self):
-        citas=self.cursor.execute("SELECT * FROM Cita").fetchall()
-        return citas
-    def consultar_estados(self,id):
-        estados=self.cursor.execute("SELECT * FROM Estado WHERE Cita_Asociada=?",(id,)).fetchall()
+
+    # Método para registrar los estados de una cita con base a su id base de datos
+    def consultar_estados(self, id):
+        estados = self.cursor.execute("SELECT * FROM Estado WHERE Cita_Asociada=?", (id,)).fetchall()
         return estados
+
     # Método para consultar todos los profesionales de salud
     def consultar_profesionales_salud(self):
         rows = self.cursor.execute("SELECT * FROM ProfesionalSalud").fetchall()
@@ -50,6 +55,7 @@ class AdministradorDB:
         return rows
 
         # Método para consultar todas las citas
+
     def consultar_citas(self):
         rows = self.cursor.execute("SELECT * FROM Cita").fetchall()
         return rows
@@ -82,8 +88,9 @@ class AdministradorDB:
 
     # Método para consultar los horarios de cita que tiene agendado un profesional de salud
     def consultar_horario_cita_por_profsalud(self, id_for):
-        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE ProfesionalSaludAsociado = ? AND Estado=7',
-                                   (id_for,)).fetchall()
+        rows = self.cursor.execute(
+            'SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE ProfesionalSaludAsociado = ? AND Estado=7',
+            (id_for,)).fetchall()
         return rows
 
     # Método para consultar los horarios de cita que tiene agendado un paciente
@@ -103,23 +110,28 @@ class AdministradorDB:
         self.cursor.execute('UPDATE Cita SET Estado = ? WHERE ID = ?', (1, id_cita))
         self.con.commit()
 
+    # Método para modificar el paciente de una cita con base en su id
     def modificar_estado(self, id_cita, modific):
         self.cursor.execute('UPDATE Cita SET Estado = ? WHERE ID = ?', (modific, id_cita))
         self.con.commit()
 
+    # Método para modificar el paciente de una cita con base en su id y en el id del paciente
     def modifciar_paciente_cita(self, id_cita, paciente):
         self.cursor.execute('UPDATE Cita SET PacienteAsociado = ? WHERE ID = ?', (paciente, id_cita))
         self.con.commit()
 
+    # Método para modificar la instalación de una cita con base en su id y en el id de la instalación
     def modifciar_instalacion_cita(self, id_cita, instalacion):
         self.cursor.execute('UPDATE Cita SET InstalacionAsociada = ? WHERE ID = ?',
                             (instalacion, id_cita))
         self.con.commit()
 
+    # Método para modificar el tipo de una cita con base en su id
     def modifciar_tipo_cita(self, id_cita, tipo):
         self.cursor.execute('UPDATE Cita SET Tipo = ? WHERE ID = ?', (tipo, id_cita))
         self.con.commit()
 
+    # Método para modificar la fecha de una cita con base en su id
     def modifciar_fecha_cita(self, id_cita, fechaIn, fechaOut):
         self.cursor.execute('UPDATE Cita SET FechaInicio = ?, FechaFinalizacion = ? WHERE ID = ?',
                             (fechaIn, fechaOut, id_cita))
@@ -134,4 +146,4 @@ class AdministradorDB:
 if __name__ == '__main__':
     AdministradorDB.db_name = "HCE_DB.db"
 else:
-    AdministradorDB.db_name = r"C:\Users\DELL\PycharmProjects\pythonProject8\Persistencia\HCE_DB.db"
+    AdministradorDB.db_name = r"Persistencia\HCE_DB.db"

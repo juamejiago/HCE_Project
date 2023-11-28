@@ -2,12 +2,7 @@
 
 # Importando las librerías y módulos requeridos
 import streamlit as st
-from Backend import Usuario, Reporte
-from Backend.Cita import TipoCita
-from Backend.EstadoCita import EstadoCita
-from Backend.Instalacion import Instalacion
-from Backend.Paciente import Paciente
-from Backend.ProfesionalSalud import ProfesionalSalud
+from Backend import Usuario, Reporte, TipoCita, EstadoCita, Instalacion, Paciente, ProfesionalSalud
 from Persistencia import AdministradorDB
 
 
@@ -88,7 +83,6 @@ def mostrar_reporte():
             st.divider()
 
             if st.button("Volver", type="primary"):
-
                 # Actualiza el estado de la variable dentro del diccionario de session_state a true
                 st.session_state["reportin"] = False
 
@@ -142,7 +136,6 @@ def mostrar_menu_general():
                 # Recarga el código
                 st.rerun()
 
-
             st.divider()
 
             st.markdown("!Anímate a usarlos¡")
@@ -158,8 +151,7 @@ def mostrar_inicio_sesion():
     with loginSection:
         if "loggedin" not in st.session_state:
             st.session_state["loggedin"] = False
-        if st.session_state["loggedin"]== False:
-
+        if st.session_state["loggedin"] == False:
 
             # Crear títulos de página
             st.markdown("# Bienvenido al módulo de gestión de citas 👨‍⚕️")
@@ -193,34 +185,36 @@ def mostrar_inicio_sesion():
 
                     # Muestra un mensaje de error
                     st.error("Usuario o contraseña incorrectos.")
+
+
 def menu_cita():
-        with menucitaSection:
-            st.markdown("# Menú de citas 📅")
+    with menucitaSection:
+        st.markdown("# Menú de citas 📅")
 
         # Botones en la página de menú de citas
-            if st.button("Agendar"):
-                st.session_state["asignarin"] = True
-                st.session_state["monitoreoin"] = False
-                st.rerun()
-            if st.button("Modificar"):
-                st.write("Lógica para Modificar Citas")
+        if st.button("Agendar"):
+            st.session_state["asignarin"] = True
+            st.session_state["monitoreoin"] = False
+            st.rerun()
+        if st.button("Modificar"):
+            st.write("Lógica para Modificar Citas")
 
-            if st.button("Monitorear"):
-                st.session_state["asignarin"] = False
-                st.session_state["monitoreoin"] = True
-                st.rerun()
+        if st.button("Monitorear"):
+            st.session_state["asignarin"] = False
+            st.session_state["monitoreoin"] = True
+            st.rerun()
 
-            st.divider()
+        st.divider()
 
-            if st.button("Volver al Menú General", type="primary"):
+        if st.button("Volver al Menú General", type="primary"):
             # Actualiza el estado de la variable dentro del diccionario de session_state a false
-                st.session_state["menucitain"] = False
-                st.session_state["monitoreoin"]=False
-                st.session_state["asignarin"] = False
-
+            st.session_state["menucitain"] = False
+            st.session_state["monitoreoin"] = False
+            st.session_state["asignarin"] = False
 
             # Recarga el código
-                st.rerun()
+            st.rerun()
+
 
 def asignar_cita():
     with asignarSection:
@@ -246,7 +240,7 @@ def asignar_cita():
             tipo = st.selectbox('Tipo de Cita', opciones_tipo_cita)
 
             # Botón para agregar la cita
-            if st.button('Agregar Cita',type="primary"):
+            if st.button('Agregar Cita', type="primary"):
 
                 Pdispo = Paciente.disponibilidad_paciente(paciente, fecha, hora_inicio, hora_fin)
                 PSdispo = ProfesionalSalud.disponibilidad_profesional(profesional, fecha, hora_inicio, hora_fin)
@@ -280,7 +274,7 @@ def monitorear_cita():
 
             admin = AdministradorDB()
             cita = admin.consultar_cita(search_query)
-            cita=cita[0]
+            cita = cita[0]
             if cita:
                 estado = EstadoCita(cita[5]).name
                 fecha1 = cita[6]
@@ -310,7 +304,7 @@ if __name__ == "__main__":
     mainSection = st.container()
     loginSection = st.container()
     reportSection = st.container()
-    menucitaSection= st.container()
+    menucitaSection = st.container()
     asignarSection = st.container()
     monitoreoSection = st.container()
 
@@ -324,7 +318,8 @@ if __name__ == "__main__":
             st.session_state["monitoreoin"] = False
             mostrar_inicio_sesion()
         else:
-            if st.session_state["loggedin"] and not st.session_state["reportin"] and not st.session_state["menucitain"] and not st.session_state["asignarin"] and not st.session_state["monitoreoin"]:
+            if st.session_state["loggedin"] and not st.session_state["reportin"] and not st.session_state[
+                "menucitain"] and not st.session_state["asignarin"] and not st.session_state["monitoreoin"]:
                 mostrar_menu_general()
             if st.session_state["loggedin"] and st.session_state["reportin"]:
                 mostrar_reporte()

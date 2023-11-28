@@ -5,6 +5,8 @@ from .ProfesionalSalud import ProfesionalSalud
 from .Paciente import Paciente
 from .Instalacion import Instalacion
 from .Cita import Cita
+from .EstadoCita import EstadoCita
+from .TipoCita import TipoCita
 
 
 class Reporte:
@@ -120,18 +122,21 @@ class Reporte:
         # Recorrer los ids obtenidos para crear unas instancias de profesional de salud que serán añadidas a una lista
         list_citas = list()
         for reg in citas:
+            # Obteniendo los datos que componen a una cita para crear una instancia del objeto
             id_cita = reg[0]
             id_paciente_asociado = reg[1]
             id_instalacion_asociada = reg[2]
             id_profesionalSalud_asociado = reg[3]
-            tipo = reg[4]
-            estado = reg[5]
+            tipo = TipoCita(reg[4]).name
+            estado = EstadoCita(reg[5]).name
             fecha_inicio = reg[6]
             fecha_finalizacion = reg[7]
 
+            # Creando la instancia de la cita
             cita_instancia = Cita(id_cita, id_paciente_asociado, id_instalacion_asociada, id_profesionalSalud_asociado,
                                   tipo, estado, fecha_inicio, fecha_finalizacion)
 
+            # Añadiendo la instancia a la lista con las citas
             list_citas.append(cita_instancia.__dict__)
 
         # Formateando el json para su impresión final

@@ -1,5 +1,5 @@
+# Importando el módulo requerido
 from enum import Enum
-from Persistencia import AdministradorDB
 
 
 class EstadoCita(Enum):
