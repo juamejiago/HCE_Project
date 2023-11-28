@@ -8,6 +8,7 @@ class Cita:
     # Constructor
     def __init__(self, id, id_paciente_asociado, id_instalacion_asociada, id_profesionalSalud_asociado, tipo, estado,
                  fecha_inicio, fecha_finalizacion):
+
         # Atributos de instancia
         self._id = id
         self._id_paciente_asociado = id_paciente_asociado
