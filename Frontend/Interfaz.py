@@ -3,6 +3,7 @@
 # Importando las librerías y módulos requeridos
 import streamlit as st
 from Backend import Usuario, Reporte
+from Persistencia import AdministradorDB
 
 
 # Mostrar interfaz de reporte
@@ -82,6 +83,7 @@ def mostrar_reporte():
             st.divider()
 
             if st.button("Volver", type="primary"):
+
                 # Actualiza el estado de la variable dentro del diccionario de session_state a true
                 st.session_state["reportin"] = False
 
