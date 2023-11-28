@@ -20,6 +20,10 @@ class AdministradorDB:
         sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
         self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, 7, fi, ff))
         self.con.commit()
+        id_cita = self.cursor.lastrowid
+        sql = "INSERT INTO Estado (Cita_Asociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
+        self.cursor.execute(sql, (id_cita, 6, "", fi, profesional))
+        self.con.commit()
     def consultar_cita(self, id):
         cita = self.cursor.execute("SELECT * FROM Cita WHERE  ID= ?",
                                    (id,)).fetchall()
