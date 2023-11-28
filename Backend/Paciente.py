@@ -1,3 +1,6 @@
+from Persistencia import AdministradorDB
+
+
 class Paciente:
     """Esta clase define el estado y el comportamiento de Paciente"""
 
@@ -11,3 +14,25 @@ class Paciente:
 
     def set_id(self, id):
         self._id = id
+
+    @classmethod
+    def disponibilidad_paciente(self,paciente, fecha, hi, hf):
+        admin=AdministradorDB()
+        ocupados = admin.consultar_horario_cita_por_paciente(paciente)
+        fecha = fecha.strftime("%Y-%m-%d")
+        hi = hi.strftime("%H:%M")
+        hf = hf.strftime("%H:%M")
+        fechaInicio = fecha + " " + hi
+        fechaFin = fecha + " " + hf
+        disponible = True
+        for fecha in ocupados:
+            if fechaInicio == fecha[0] or fechaInicio == fecha[1]:
+                disponible = False
+                break
+            elif fechaInicio > fecha[0] and fechaInicio < fecha[1]:
+                disponible = False
+                break
+            elif fechaFin > fecha[0] and fechaFin < fecha[1]:
+                disponible = False
+                break
+        return disponible

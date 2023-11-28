@@ -3,6 +3,11 @@
 # Importando las librerías y módulos requeridos
 import streamlit as st
 from Backend import Usuario, Reporte
+from Backend.Cita import TipoCita
+from Backend.EstadoCita import EstadoCita
+from Backend.Instalacion import Instalacion
+from Backend.Paciente import Paciente
+from Backend.ProfesionalSalud import ProfesionalSalud
 from Persistencia import AdministradorDB
 
 
@@ -132,7 +137,11 @@ def mostrar_menu_general():
 
             # Comprueba si el botón de menú de citas ha sido presionado
             if st.button("Menú de citas", type="primary"):
-                pass
+                st.session_state["menucitain"] = True
+
+                # Recarga el código
+                st.rerun()
+
 
             st.divider()
 
@@ -147,7 +156,10 @@ def mostrar_menu_general():
 # Mostrar interfaz de inicio de sesión
 def mostrar_inicio_sesion():
     with loginSection:
-        if not st.session_state["loggedin"]:
+        if "loggedin" not in st.session_state:
+            st.session_state["loggedin"] = False
+        if st.session_state["loggedin"]== False:
+
 
             # Crear títulos de página
             st.markdown("# Bienvenido al módulo de gestión de citas 👨‍⚕️")
@@ -181,6 +193,113 @@ def mostrar_inicio_sesion():
 
                     # Muestra un mensaje de error
                     st.error("Usuario o contraseña incorrectos.")
+def menu_cita():
+        with menucitaSection:
+            st.markdown("# Menú de citas 📅")
+
+        # Botones en la página de menú de citas
+            if st.button("Agendar"):
+                st.session_state["asignarin"] = True
+                st.session_state["monitoreoin"] = False
+                st.rerun()
+            if st.button("Modificar"):
+                st.write("Lógica para Modificar Citas")
+
+            if st.button("Monitorear"):
+                st.session_state["asignarin"] = False
+                st.session_state["monitoreoin"] = True
+                st.rerun()
+
+            st.divider()
+
+            if st.button("Volver al Menú General", type="primary"):
+            # Actualiza el estado de la variable dentro del diccionario de session_state a false
+                st.session_state["menucitain"] = False
+                st.session_state["monitoreoin"]=False
+                st.session_state["asignarin"] = False
+
+
+            # Recarga el código
+                st.rerun()
+
+def asignar_cita():
+    with asignarSection:
+        if st.session_state["asignarin"]:
+            opciones_tipo_cita = [tipo.name.replace('_', ' ').title() for tipo in TipoCita]
+            admin = AdministradorDB()
+
+            pacientes = [tupla[0] for tupla in admin.consultar_pacientes()]
+            profesionales = [tupla[0] for tupla in admin.consultar_profesionales_salud()]
+            instalaciones = [tupla[0] for tupla in admin.consultar_instalaciones()]
+            st.subheader('Agregar Nueva Cita')
+
+            # Obtener información de la cita
+            fecha = st.date_input('Fecha de la Cita')
+            hora_inicio = st.time_input('Hora de Inicio')
+            hora_fin = st.time_input('Hora de Finalización')
+
+            # Desplegables para seleccionar paciente, profesional e instalación
+            paciente = st.selectbox('Seleccione Paciente', pacientes)
+            profesional = st.selectbox('Seleccione Profesional', profesionales)
+            instalacion = st.selectbox('Seleccione Instalación', instalaciones)
+
+            tipo = st.selectbox('Tipo de Cita', opciones_tipo_cita)
+
+            # Botón para agregar la cita
+            if st.button('Agregar Cita',type="primary"):
+
+                Pdispo = Paciente.disponibilidad_paciente(paciente, fecha, hora_inicio, hora_fin)
+                PSdispo = ProfesionalSalud.disponibilidad_profesional(profesional, fecha, hora_inicio, hora_fin)
+                Idispo = Instalacion.disponibilidad_instalacion(instalacion, fecha, hora_inicio, hora_fin)
+
+                if PSdispo and Pdispo and Idispo:
+                    fecha = fecha.strftime("%Y-%m-%d")
+                    hora_inicio = hora_inicio.strftime("%H:%M")
+                    hora_fin = hora_fin.strftime("%H:%M")
+                    fechaInicio = fecha + " " + hora_inicio
+                    fechaFin = fecha + " " + hora_fin
+
+                    tipo = next((t.value for t in TipoCita if t.name.replace('_', ' ').title() == tipo), None)
+                    admin.crear_cita(paciente, instalacion, profesional, tipo, fechaInicio, fechaFin)
+                    st.success('Cita agregada exitosamente.')
+                if PSdispo == False:
+                    st.error("El profesional no tiene esa fecha disponible")
+                if Pdispo == False:
+                    st.error("El paciente no tiene esa fecha disponible")
+                if Idispo == False:
+                    st.error("La instalacion no tiene esa fecha disponible")
+
+
+def monitorear_cita():
+    with monitoreoSection:
+        st.title("Buscador de Citas")
+
+        search_query = st.text_input("Ingrese el id de la cita:")
+        if st.button("Buscar"):
+            st.write("Resultados de la búsqueda:")
+
+            admin = AdministradorDB()
+            cita = admin.consultar_cita(search_query)
+            cita=cita[0]
+            if cita:
+                estado = EstadoCita(cita[5]).name
+                fecha1 = cita[6]
+                fecha2 = cita[7]
+                tipo = TipoCita(cita[4]).name
+                st.write(f"La cita con código de identificación C{cita[0]} se encuentra en estado actual {estado}"
+                         f" y se programo con fecha de inicio  {fecha1} y fecha de finalización {fecha2} para el"
+                         f" paciente con ID {cita[1]}. El tipo de esta cita corresponde a una {tipo} y tiene asignada"
+                         f" la instalación con ID {cita[2]} con el profesional de salud con ID {cita[3]}.")
+                st.write("Estados")
+                admin = AdministradorDB()
+                estados = admin.consultar_estados(cita[0])
+                for estado in estados:
+                    tipo = EstadoCita(estado[2]).name
+                    fecha = estado[4]
+                    st.write(f"{tipo} {fecha} autor: {estado[5]}")
+
+            else:
+                st.write(f"No existe una cita relacionada con el ID {search_query}")
 
 
 if __name__ == "__main__":
@@ -191,17 +310,31 @@ if __name__ == "__main__":
     mainSection = st.container()
     loginSection = st.container()
     reportSection = st.container()
+    menucitaSection= st.container()
+    asignarSection = st.container()
+    monitoreoSection = st.container()
 
     # Manejo de transición en inicio de sesión
     with loginSection:
         if "loggedin" not in st.session_state:
             st.session_state["reportin"] = False
             st.session_state["loggedin"] = False
+            st.session_state["menucitain"] = False
+            st.session_state["asignarin"] = False
+            st.session_state["monitoreoin"] = False
             mostrar_inicio_sesion()
         else:
-            if st.session_state["loggedin"] and not st.session_state["reportin"]:
+            if st.session_state["loggedin"] and not st.session_state["reportin"] and not st.session_state["menucitain"] and not st.session_state["asignarin"] and not st.session_state["monitoreoin"]:
                 mostrar_menu_general()
-            elif st.session_state["loggedin"] and st.session_state["reportin"]:
+            if st.session_state["loggedin"] and st.session_state["reportin"]:
                 mostrar_reporte()
+            if st.session_state["loggedin"] and st.session_state["menucitain"]:
+                menu_cita()
+            if st.session_state["loggedin"] and st.session_state["asignarin"] and not st.session_state["monitoreoin"]:
+                asignar_cita()
+            if st.session_state["loggedin"] and st.session_state["monitoreoin"]:
+                monitorear_cita()
+
+
             else:
                 mostrar_inicio_sesion()

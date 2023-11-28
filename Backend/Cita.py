@@ -1,6 +1,23 @@
 # Importando el módulo requerido
-from Persistencia import AdministradorDB
+from enum import Enum
 
+from Persistencia import AdministradorDB
+class TipoCita(Enum):
+    CONSULTA_MEDICA = 1
+    EXAMEN_FISICO = 2
+    SESION_PSICOLOGICA = 3
+    REVISION_DENTAL = 4
+    CONTROL_NUTRICIONAL = 5
+    VACUNACION = 6
+    ANALISIS_DE_SANGRE = 7
+    FISIOTERAPIA = 8
+    CONSULTA_OCULAR = 9
+    TRATAMIENTO_ORTODONTICO = 10
+    TERAPIA_OCUPACIONAL = 11
+    CIRUGIA = 12
+    SEGUIMIENTO_EMBARAZO = 13
+    CONSULTA_PEDIATRICA = 14
+    TERAPIA_DE_PAREJA = 15
 
 class Cita:
     """Esta clase define el estado y comportamiento de una Cita"""
@@ -8,7 +25,6 @@ class Cita:
     # Constructor
     def __init__(self, id, id_paciente_asociado, id_instalacion_asociada, id_profesionalSalud_asociado, tipo, estado,
                  fecha_inicio, fecha_finalizacion):
-
         # Atributos de instancia
         self._id = id
         self._id_paciente_asociado = id_paciente_asociado

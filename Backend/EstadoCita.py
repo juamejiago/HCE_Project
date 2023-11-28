@@ -9,9 +9,6 @@ class EstadoCita(Enum):
     VERIFICADA = 4
     ANUNCIADA = 5
     AGENDADA = 6
+    ACTIVA = 7
 
-    def __init__(self):
-        self.instancia = AdministradorDB()
 
-    def modificar_estado_cita(self, id_cita, modificacion):
-        cambio = self.instancia.modificar_estado(id_cita, modificacion)

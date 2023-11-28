@@ -12,11 +12,24 @@ class AdministradorDB:
 
     # Constructor
     def __init__(self):
-        self.con = sq.connect(AdministradorDB.db_name)
+        self.con = sq.connect("C:\\Users\\DELL\\PycharmProjects\\pythonProject8\\Persistencia\\HCE_DB.db")
         self.cursor = self.con.cursor()
 
     # Métodos de instancia
-
+    def crear_cita(self, paciente, instalacion, profesional, tipo, fi, ff):
+        sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, 7, fi, ff))
+        self.con.commit()
+    def consultar_cita(self, id):
+        cita = self.cursor.execute("SELECT * FROM Cita WHERE  ID= ?",
+                                   (id,)).fetchall()
+        return cita
+    def consultar_citas(self):
+        citas=self.cursor.execute("SELECT * FROM Cita").fetchall()
+        return citas
+    def consultar_estados(self,id):
+        estados=self.cursor.execute("SELECT * FROM Estado WHERE Cita_Asociada=?",(id,)).fetchall()
+        return estados
     # Método para consultar todos los profesionales de salud
     def consultar_profesionales_salud(self):
         rows = self.cursor.execute("SELECT * FROM ProfesionalSalud").fetchall()
@@ -65,7 +78,7 @@ class AdministradorDB:
 
     # Método para consultar los horarios de cita que tiene agendado un profesional de salud
     def consultar_horario_cita_por_profsalud(self, id_for):
-        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE ProfesionalSaludAsociado = ?',
+        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE ProfesionalSaludAsociado = ? AND Estado=7',
                                    (id_for,)).fetchall()
         return rows
 
@@ -117,4 +130,4 @@ class AdministradorDB:
 if __name__ == '__main__':
     AdministradorDB.db_name = "HCE_DB.db"
 else:
-    AdministradorDB.db_name = r"C:\Users\Juanp\PycharmProjects\HCE_Project\Persistencia\HCE_DB.db"
+    AdministradorDB.db_name = r"C:\Users\DELL\PycharmProjects\pythonProject8\Persistencia\HCE_DB.db"
