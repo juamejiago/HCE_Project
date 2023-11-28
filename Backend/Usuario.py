@@ -3,22 +3,25 @@ from Persistencia import AdministradorDB
 
 
 class Usuario:
-    """Este clase define el estado y el comportamiento de Usuario"""
+    """Esta clase define el estado y el comportamiento de Usuario"""
 
     # Constructor
-    def __init__(self, nombre_usuario, contrasena):
+    def __init__(self, id, contrasena):
         # Atributos de instancia
-        self.__nombre_usuario = nombre_usuario
-        self.__contrasena = contrasena
+        self._id = id
+        self._contrasena = contrasena
 
     # Métodos de clase
     @staticmethod
-    def verificar_inicio_sesion(username, password):
+    def verificar_inicio_sesion(password, id):
         # Creando una conexión con la base de datos
         instancia_verificacion_sesion = AdministradorDB()
 
         # Realizando la consulta a la base de datos
-        respuesta_consulta = instancia_verificacion_sesion.consultar_credenciales_sesion(username, password)
+        respuesta_consulta = instancia_verificacion_sesion.consultar_credenciales_sesion(password, id)
+
+        # Cerrando conexión con la base de datos
+        instancia_verificacion_sesion.cerrar_conexion_db()
 
         # Si encuentra un registro en base de datos con dichos datos retorna True, en caso contrario retorna False
         if len(respuesta_consulta) != 0:
@@ -27,14 +30,14 @@ class Usuario:
             return False
 
     # Métodos de instancia
-    def get_nombre_usuario(self):
-        return self.__nombre_usuario
+    def get_id(self):
+        return self._id
 
-    def set_nombre_usuario(self, nombre_usuario):
-        self.__nombre_usuario = nombre_usuario
+    def set_id(self, id):
+        self._id = id
 
     def get_contrasena(self):
-        return self.__contrasena
+        return self._contrasena
 
     def set_contrasena(self, contrasena):
-        self.__contrasena = contrasena
+        self._contrasena = contrasena

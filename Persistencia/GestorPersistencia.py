@@ -28,8 +28,13 @@ class AdministradorDB:
         return rows
 
     # Método para consultar todas las instalaciones
-    def consultar_instalacion(self):
+    def consultar_instalaciones(self):
         rows = self.cursor.execute("SELECT * FROM Instalacion").fetchall()
+        return rows
+
+        # Método para consultar todas las citas
+    def consultar_citas(self):
+        rows = self.cursor.execute("SELECT * FROM Cita").fetchall()
         return rows
 
     # Método para consultar el estado de una cita
@@ -83,4 +88,4 @@ class AdministradorDB:
 if __name__ == '__main__':
     AdministradorDB.db_name = "HCE_DB.db"
 else:
-    AdministradorDB.db_name = "Persistencia/HCE_DB.db"
+    AdministradorDB.db_name = r"C:\Users\Juanp\PycharmProjects\HCE_Project\Persistencia\HCE_DB.db"
