@@ -40,8 +40,15 @@ class AdministradorDB:
     # Método para consultar el estado de una cita
     def consultar_estado_cita(self, id_cita):
         rows = self.cursor.execute("SELECT * FROM Cita").fetchall()
-        return rows[id_cita]
+        return rows[id_cita][5]
 
+    # Método para consultar por las credenciales de sesión de un usuario
+    def consultar_credenciales_sesion(self, password, ID):
+        rows = self.cursor.execute("SELECT Contrasena, ID FROM Usuario \
+        WHERE (contrasena, ID) = (?, ?)", (password, ID)).fetchall()
+        return rows
+
+    # Método para crear un nuevo profesional de salud
     def crear_profesional_salud(self):
         self.cursor.execute("INSERT INTO ProfesionalSalud DEFAULT VALUES")
         self.con.commit()
@@ -58,7 +65,7 @@ class AdministradorDB:
 
     # Método para consultar los horarios de cita que tiene agendado un profesional de salud
     def consultar_horario_cita_por_profsalud(self, id_for):
-        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE \ProfesionalSaludAsociado = ?',
+        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE ProfesionalSaludAsociado = ?',
                                    (id_for,)).fetchall()
         return rows
 
@@ -77,6 +84,28 @@ class AdministradorDB:
     # Método para cancelar una cita
     def cancelar_cita(self, id_cita):
         self.cursor.execute('UPDATE Cita SET Estado = ? WHERE ID = ?', (1, id_cita))
+        self.con.commit()
+
+    def modificar_estado(self, id_cita, modific):
+        self.cursor.execute('UPDATE Cita SET Estado = ? WHERE ID = ?', (modific, id_cita))
+        self.con.commit()
+
+    def modifciar_paciente_cita(self, id_cita, paciente):
+        self.cursor.execute('UPDATE Cita SET PacienteAsociado = ? WHERE ID = ?', (paciente, id_cita))
+        self.con.commit()
+
+    def modifciar_instalacion_cita(self, id_cita, instalacion):
+        self.cursor.execute('UPDATE Cita SET InstalacionAsociada = ? WHERE ID = ?',
+                            (instalacion, id_cita))
+        self.con.commit()
+
+    def modifciar_tipo_cita(self, id_cita, tipo):
+        self.cursor.execute('UPDATE Cita SET Tipo = ? WHERE ID = ?', (tipo, id_cita))
+        self.con.commit()
+
+    def modifciar_fecha_cita(self, id_cita, fechaIn, fechaOut):
+        self.cursor.execute('UPDATE Cita SET FechaInicio = ?, FechaFinalizacion = ? WHERE ID = ?',
+                            (fechaIn, fechaOut, id_cita))
         self.con.commit()
 
     # Método para cerrar la conexión con la base de datos

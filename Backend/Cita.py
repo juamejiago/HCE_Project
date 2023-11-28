@@ -4,13 +4,21 @@ class Cita:
     """Esta clase define el estado y comportamiento de una Cita"""
 
     # Constructor
-    def __init__(self, ID, tipo, fecha, recursos, estado):
+    def __init__(self, id, id_paciente_asociado, id_instalacion_asociada, id_profesionalSalud_asociado, tipo, estado,
+                 fecha_inicio, fecha_finalizacion):
         # Atributos de instancia
-        self.__ID = ID
-        self.__tipo = tipo
-        self.__fecha = fecha
-        self.__recursos = recursos
-        self.estado = estado
+        self._id = id
+        self._id_paciente_asociado = id_paciente_asociado
+        self._id_instalacion_asociada = id_instalacion_asociada
+        self._id_profesionalSalud_asociado = id_profesionalSalud_asociado
+        self._tipo = tipo
+        self._estado = estado
+        self._fecha_inicio = fecha_inicio
+        self._fecha_finalizacion = fecha_finalizacion
+
+
+        # NO PONER ACÁ PORFA
+        #self.instancia = AdministradorDB()
 
     # Métodos de instancia
     def get_id(self):
