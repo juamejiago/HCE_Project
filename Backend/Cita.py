@@ -14,9 +14,6 @@ class Cita:
         self._fecha_inicio = fecha_inicio
         self._fecha_finalizacion = fecha_finalizacion
 
-        # NO PONER ACÁ PORFA
-        # self.instancia = AdministradorDB()
-
     # Métodos de instancia
     def get_id(self):
         return self._id
@@ -65,25 +62,3 @@ class Cita:
 
     def set_fecha_finalizacion(self, fecha_finalizacion):
         self._fecha_finalizacion = fecha_finalizacion
-
-    def modificar_paciente(self, pacienteNuevo, id_cita):
-        '''Consultar si el paciente ya tiene una cita asignada, si esa hora se traspala con esta modificacion
-        buscar otra fecha.'''
-        consultarPacienteNuevo = self.instancia.consultar_pacientes()
-        if consultarPacienteNuevo:
-            cambio = self.instancia.modifciar_paciente_cita(id_cita, pacienteNuevo)
-
-    def modificar_instalacion(self, id):
-        '''La idea es consultar si la instalacion a modificar ya está asignada por medio de la clave foranea
-        a una cita, para después consultar si para la fehca que se desea usar esa instalacion ya esta siendo
-        utilizada por la cita asignada. Si no lo está, se modifica la cita, si lo está, se busca otra fecha.'''
-        pass
-
-    def modificar_tipo_cita(self):
-        pass
-
-    def modificar_fecha(self):
-        pass
-
-    def monitorear_cita(self):
-        pass

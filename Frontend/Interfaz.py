@@ -195,13 +195,18 @@ def menu_cita():
         if st.button("Agendar"):
             st.session_state["asignarin"] = True
             st.session_state["monitoreoin"] = False
+            st.session_state["modificarin"] = False
             st.rerun()
         if st.button("Modificar"):
-            st.write("Lógica para Modificar Citas")
+            st.session_state["modificarin"] = True
+            st.session_state["monitoreoin"] = False
+            st.session_state["asignarin"] = False
+            st.rerun()
 
         if st.button("Monitorear"):
             st.session_state["asignarin"] = False
             st.session_state["monitoreoin"] = True
+            st.session_state["modificarin"] = False
             st.rerun()
 
         st.divider()
@@ -295,6 +300,47 @@ def monitorear_cita():
             else:
                 st.write(f"No existe una cita relacionada con el ID {search_query}")
 
+def modificar_cita():
+    with modificacionSection:
+        instancia = AdministradorDB()
+        st.title("Modificar Cita")
+        search_query = st.text_input("Ingrese el id de la cita:")
+        if st.button("Modificar Paciente"):
+            cita = instancia.consultar_cita(search_query)
+            cita = cita[0]
+            pacientes = [tupla[0] for tupla in instancia.consultar_pacientes()]
+            paciente = st.selectbox('Seleccione Paciente', pacientes)
+            if st.button("Confirmar"):
+                pass
+
+        if st.button("Modificar Instalacion"):
+            cita = instancia.consultar_cita(search_query)
+            cita = cita[0]
+            instalaciones = [tupla[0] for tupla in instancia.consultar_instalaciones()]
+            instalacion = st.selectbox('Seleccione Instalación', instalaciones)
+            if st.button("Confirmar"):
+                pass
+
+        if st.button("Modificar Tipo"):
+            cita = instancia.consultar_cita(search_query)
+            cita = cita[0]
+            tiposCitas = {t.name.replace('_', ' ').title(): t.value for t in TipoCita}
+            tipos = st.selectbox('Seleccione el tipo de la cita', tiposCitas)
+            if st.button("Confirmar"):
+                pass
+
+        if st.button("Modificar Estado"):
+            cita = instancia.consultar_cita(search_query)
+            cita = cita[0]
+            estado = [e.name.replace('_', ' ').title() for e in EstadoCita if e.name != 'MODIFICADA']
+            estados = st.selectbox('Seleccione el estado a modificar de la cita', estado)
+            if st.button("Confirmar"):
+                pass
+
+        if st.button("Modificar Fecha y Hora"):
+            cita = instancia.consultar_cita(search_query)
+            cita = cita[0]
+
 
 if __name__ == "__main__":
     # Configurando el título de la página
@@ -307,6 +353,7 @@ if __name__ == "__main__":
     menucitaSection = st.container()
     asignarSection = st.container()
     monitoreoSection = st.container()
+    modificacionSection = st.container()
 
     # Manejo de transición en inicio de sesión
     with loginSection:
@@ -316,6 +363,7 @@ if __name__ == "__main__":
             st.session_state["menucitain"] = False
             st.session_state["asignarin"] = False
             st.session_state["monitoreoin"] = False
+            st.session_state["modificarin"] = False
             mostrar_inicio_sesion()
         else:
             if st.session_state["loggedin"] and not st.session_state["reportin"] and not st.session_state[
@@ -329,7 +377,8 @@ if __name__ == "__main__":
                 asignar_cita()
             if st.session_state["loggedin"] and st.session_state["monitoreoin"]:
                 monitorear_cita()
-
+            if st.session_state["loggedin"] and st.session_state["modificarin"]:
+                modificar_cita()
 
             else:
                 mostrar_inicio_sesion()
