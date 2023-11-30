@@ -113,14 +113,19 @@ class AdministradorDB:
 
     # Método para modificar una cita por ID.
     def modificacion_general(self, id_cita, paciente, instalacion, profesional, tipo, estado, fi, ff, t_modificacion):
-        sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, \
-        FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
-        self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, estado, fi, ff))
-        self.con.commit()
-
-        sql = "INSERT INTO Estado (CitaAsociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
-        self.cursor.execute(sql, (id_cita, 2, "Cita Modificada.", t_modificacion, profesional))
-        self.con.commit()
+        if estado!=1:
+            sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, \
+            FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
+            self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, estado, fi, ff))
+            self.con.commit()
+        if estado!=1:
+            sql = "INSERT INTO Estado (CitaAsociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
+            self.cursor.execute(sql, (id_cita, 2, "Cita Modificada.", t_modificacion, profesional))
+            self.con.commit()
+        else:
+            sql = "INSERT INTO Estado (CitaAsociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
+            self.cursor.execute(sql, (id_cita, 2, "Cita Cancelada.", t_modificacion, profesional))
+            self.con.commit()
 
         self.cursor.execute('UPDATE Cita SET PacienteAsociado = ?, InstalacionAsociada = ?,'
                             'Tipo = ?, Estado = ?, FechaInicio = ?, FechaFinalizacion = ? WHERE ID = ?',

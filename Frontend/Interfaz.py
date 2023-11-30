@@ -336,14 +336,15 @@ class Interfaz():
                         profesionales = [tupla[0] for tupla in instancia.consultar_profesionales_salud()]
                         instalaciones = [tupla[0] for tupla in instancia.consultar_instalaciones()]
                         opciones_tipo_cita = [tipo.name.replace('_', ' ').title() for tipo in TipoCita]
-                        estados = [e.name.replace('_', ' ').title() for e in EstadoCita if e.name != 'MODIFICADA']
+                        estados = [e.name.replace('_', ' ').title() for e in EstadoCita]
 
                         # Desplegables para seleccionar paciente, profesional e instalación
                         paciente = st.selectbox('Seleccione Paciente', pacientes,index=pacientes.index(cita[1]))
                         instalacion = st.selectbox('Seleccione Instalación', instalaciones, index=instalaciones.index(cita[2]))
                         profesional = st.selectbox('Seleccione Profesional', profesionales, index=profesionales.index(cita[3]))
                         tipo = st.selectbox('Tipo de Cita', opciones_tipo_cita, index=cita[4]-1)
-                        estado = st.selectbox('Seleccione el estado a modificar de la cita', estados)
+                        indexEstado = [e.name.replace('_', ' ').title() for e in EstadoCita if e.value==cita[5]]
+                        estado = st.selectbox('Seleccione el estado a modificar de la cita', estados, index=estados.index(indexEstado[0]))
 
                         # Obtener información de la cita
                         fecha = st.date_input('Fecha de la Cita')
@@ -353,13 +354,8 @@ class Interfaz():
                         # Botón para agregar la cita
                         if st.button('Confirmar modificación de cita.', type="primary"):
 
-                            Pdispo = Paciente.disponibilidad_paciente(paciente, fecha, hora_inicio, hora_fin)
-                            Idispo = Instalacion.disponibilidad_instalacion(instalacion, fecha, hora_inicio, hora_fin)
-                            PSdispo = ProfesionalSalud.disponibilidad_profesional(profesional, fecha, hora_inicio,
-                                                                                  hora_fin)
+                            if str(estado)=='Cancelada':
 
-
-                            if Pdispo and Idispo and PSdispo:
                                 fecha = fecha.strftime("%Y-%m-%d")
                                 hora_inicio = hora_inicio.strftime("%H:%M")
                                 hora_fin = hora_fin.strftime("%H:%M")
@@ -368,24 +364,53 @@ class Interfaz():
 
                                 now = datetime.now()
                                 t_modificacion = now.strftime("%Y-%m-%d %H:%M")
-                                tipo = next((t.value for t in TipoCita if t.name.replace('_', ' ').title() == tipo), None)
-                                estado = next((e.value for e in EstadoCita if e.name.replace('_', ' ').title() == estado),
-                                              None)
-                                print(id_cita, paciente, instalacion, profesional, tipo, estado,
-                                      fechaInicio, fechaFin, t_modificacion)
-                                instancia.modificacion_general(id_cita, paciente, instalacion, profesional, tipo, estado,
+
+                                tipo = next((t.value for t in TipoCita if t.name.replace('_', ' ').title() == tipo),
+                                            None)
+                                estado = next(
+                                    (e.value for e in EstadoCita if e.name.replace('_', ' ').title() == estado),
+                                    None)
+                                instancia.modificacion_general(id_cita, paciente, instalacion, profesional, tipo,
+                                                               estado,
                                                                fechaInicio, fechaFin, t_modificacion)
-                                st.success('Cita modificada exitosamente.')
+                                st.success('Cita cancelada exitosamente.')
 
-                            if Pdispo == False:
-                                st.error("El paciente no tiene esa fecha disponible")
-                            if Idispo == False:
-                                st.error("La instalacion no tiene esa fecha disponible")
-                            if PSdispo == False:
-                                st.error("El profesional no tiene esa fecha disponible")
+                            elif str(estado)=='Modificada':
+                                st.error("No se permite modificar una cita con estado Modificado.")
+
+                            else:
+
+                                Pdispo = Paciente.disponibilidad_paciente(paciente, fecha, hora_inicio, hora_fin)
+                                Idispo = Instalacion.disponibilidad_instalacion(instalacion, fecha, hora_inicio, hora_fin)
+                                PSdispo = ProfesionalSalud.disponibilidad_profesional(profesional, fecha, hora_inicio,
+                                                                                      hora_fin)
 
 
-                            instancia.cerrar_conexion_db()
+                                if Pdispo and Idispo and PSdispo:
+                                    fecha = fecha.strftime("%Y-%m-%d")
+                                    hora_inicio = hora_inicio.strftime("%H:%M")
+                                    hora_fin = hora_fin.strftime("%H:%M")
+                                    fechaInicio = fecha + " " + hora_inicio
+                                    fechaFin = fecha + " " + hora_fin
+
+                                    now = datetime.now()
+                                    t_modificacion = now.strftime("%Y-%m-%d %H:%M")
+                                    tipo = next((t.value for t in TipoCita if t.name.replace('_', ' ').title() == tipo), None)
+                                    estado = next((e.value for e in EstadoCita if e.name.replace('_', ' ').title() == estado),
+                                                  None)
+                                    instancia.modificacion_general(id_cita, paciente, instalacion, profesional, tipo, estado,
+                                                                   fechaInicio, fechaFin, t_modificacion)
+                                    st.success('Cita modificada exitosamente.')
+
+                                if Pdispo == False:
+                                    st.error("El paciente no tiene esa fecha disponible")
+                                if Idispo == False:
+                                    st.error("La instalacion no tiene esa fecha disponible")
+                                if PSdispo == False:
+                                    st.error("El profesional no tiene esa fecha disponible")
+
+
+                                instancia.cerrar_conexion_db()
 
             else:
                 st.error("Ingrese el ID de la cita.")
