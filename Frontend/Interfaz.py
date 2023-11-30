@@ -2,6 +2,7 @@
 
 # Importando las librerías y módulos requeridos
 import streamlit as st
+from datetime import datetime
 from Backend import Usuario, Reporte, TipoCita, EstadoCita, Instalacion, Paciente, ProfesionalSalud
 from Persistencia import AdministradorDB
 
@@ -274,73 +275,96 @@ def monitorear_cita():
         st.title("Buscador de Citas")
 
         search_query = st.text_input("Ingrese el id de la cita:")
-        if st.button("Buscar"):
-            st.write("Resultados de la búsqueda:")
+        if search_query:
+            if st.button("Buscar"):
+                st.write("Resultados de la búsqueda:")
 
-            admin = AdministradorDB()
-            cita = admin.consultar_cita(search_query)
-            cita = cita[0]
-            if cita:
-                estado = EstadoCita(cita[5]).name
-                fecha1 = cita[6]
-                fecha2 = cita[7]
-                tipo = TipoCita(cita[4]).name
-                st.write(f"La cita con código de identificación C{cita[0]} se encuentra en estado actual {estado}"
-                         f" y se programo con fecha de inicio  {fecha1} y fecha de finalización {fecha2} para el"
-                         f" paciente con ID {cita[1]}. El tipo de esta cita corresponde a una {tipo} y tiene asignada"
-                         f" la instalación con ID {cita[2]} con el profesional de salud con ID {cita[3]}.")
-                st.write("Estados")
                 admin = AdministradorDB()
-                estados = admin.consultar_estados(cita[0])
-                for estado in estados:
-                    tipo = EstadoCita(estado[2]).name
-                    fecha = estado[4]
-                    st.write(f"{tipo} {fecha} autor: {estado[5]}")
+                cita = admin.consultar_cita(search_query)
+                if len(cita)==0:
+                    st.error(f"No existe una cita relacionada con el ID {search_query}")
+                else:
 
-            else:
-                st.write(f"No existe una cita relacionada con el ID {search_query}")
+                    cita = cita[0]
+                    if cita:
+                        estado = EstadoCita(cita[5]).name
+                        fecha1 = cita[6]
+                        fecha2 = cita[7]
+                        tipo = TipoCita(cita[4]).name
+                        st.write(f"La cita con código de identificación C{cita[0]} se encuentra en estado actual {estado}"
+                                 f" y se programo con fecha de inicio  {fecha1} y fecha de finalización {fecha2} para el"
+                                 f" paciente con ID {cita[1]}. El tipo de esta cita corresponde a una {tipo} y tiene asignada"
+                                 f" la instalación con ID {cita[2]} con el profesional de salud con ID {cita[3]}.")
+                        st.write("Estados")
+                        admin = AdministradorDB()
+                        estados = admin.consultar_estados(cita[0])
+                        for estado in estados:
+                            tipo = EstadoCita(estado[2]).name
+                            fecha = estado[4]
+                            st.write(f"{tipo} {fecha} autor: {estado[5]}")
+        else:
+            st.error("Ingresar Id de la cita.")
 
 def modificar_cita():
     with modificacionSection:
         instancia = AdministradorDB()
         st.title("Modificar Cita")
         search_query = st.text_input("Ingrese el id de la cita:")
-        if st.button("Modificar Paciente"):
+        if search_query:
             cita = instancia.consultar_cita(search_query)
-            cita = cita[0]
-            pacientes = [tupla[0] for tupla in instancia.consultar_pacientes()]
-            paciente = st.selectbox('Seleccione Paciente', pacientes)
-            if st.button("Confirmar"):
-                pass
+            if len(cita)==0:
+                st.error(f"No existe una cita relacionada con el ID {search_query}")
+            else:
+                if cita:
+                    cita = cita[0]
 
-        if st.button("Modificar Instalacion"):
-            cita = instancia.consultar_cita(search_query)
-            cita = cita[0]
-            instalaciones = [tupla[0] for tupla in instancia.consultar_instalaciones()]
-            instalacion = st.selectbox('Seleccione Instalación', instalaciones)
-            if st.button("Confirmar"):
-                pass
+                    id_cita, profesional = cita[0], cita[3]
 
-        if st.button("Modificar Tipo"):
-            cita = instancia.consultar_cita(search_query)
-            cita = cita[0]
-            tiposCitas = {t.name.replace('_', ' ').title(): t.value for t in TipoCita}
-            tipos = st.selectbox('Seleccione el tipo de la cita', tiposCitas)
-            if st.button("Confirmar"):
-                pass
+                    pacientes = [tupla[0] for tupla in instancia.consultar_pacientes()]
+                    profesionales = [tupla[0] for tupla in instancia.consultar_profesionales_salud()]
+                    instalaciones = [tupla[0] for tupla in instancia.consultar_instalaciones()]
+                    opciones_tipo_cita = [tipo.name.replace('_', ' ').title() for tipo in TipoCita]
+                    estados = [e.name.replace('_', ' ').title() for e in EstadoCita if e.name != 'MODIFICADA']
 
-        if st.button("Modificar Estado"):
-            cita = instancia.consultar_cita(search_query)
-            cita = cita[0]
-            estado = [e.name.replace('_', ' ').title() for e in EstadoCita if e.name != 'MODIFICADA']
-            estados = st.selectbox('Seleccione el estado a modificar de la cita', estado)
-            if st.button("Confirmar"):
-                pass
+                    # Desplegables para seleccionar paciente, profesional e instalación
+                    paciente = st.selectbox('Seleccione Paciente', pacientes)
+                    instalacion = st.selectbox('Seleccione Instalación', instalaciones)
+                    tipo = st.selectbox('Tipo de Cita', opciones_tipo_cita)
+                    estado = st.selectbox('Seleccione el estado a modificar de la cita', estados)
 
-        if st.button("Modificar Fecha y Hora"):
-            cita = instancia.consultar_cita(search_query)
-            cita = cita[0]
+                    # Obtener información de la cita
+                    fecha = st.date_input('Fecha de la Cita')
+                    hora_inicio = st.time_input('Hora de Inicio')
+                    hora_fin = st.time_input('Hora de Finalización')
 
+                    # Botón para agregar la cita
+                    if st.button('Confirmar modificación de cita.', type="primary"):
+
+                        Pdispo = Paciente.disponibilidad_paciente(paciente, fecha, hora_inicio, hora_fin)
+                        Idispo = Instalacion.disponibilidad_instalacion(instalacion, fecha, hora_inicio, hora_fin)
+
+                        if Pdispo and Idispo:
+                            fecha = fecha.strftime("%Y-%m-%d")
+                            hora_inicio = hora_inicio.strftime("%H:%M")
+                            hora_fin = hora_fin.strftime("%H:%M")
+                            fechaInicio = fecha + " " + hora_inicio
+                            fechaFin = fecha + " " + hora_fin
+
+                            now = datetime.now()
+                            t_modificacion = now.strftime("%Y-%m-%d %H:%M")
+                            tipo = next((t.value for t in TipoCita if t.name.replace('_', ' ').title() == tipo), None)
+                            estado = next((e.value for e in EstadoCita if e.name.replace('_', ' ').title() == estado), None)
+                            print(id_cita,paciente,instalacion,profesional,tipo,estado,
+                                                           fechaInicio,fechaFin,t_modificacion)
+                            instancia.modificacion_general(id_cita,paciente,instalacion,profesional,tipo,estado,
+                                                           fechaInicio,fechaFin,t_modificacion)
+                            st.success('Cita modificada exitosamente.')
+
+                        if Pdispo == False:
+                            st.error("El paciente no tiene esa fecha disponible")
+                        if Idispo == False:
+                            st.error("La instalacion no tiene esa fecha disponible")
+        else: st.error("Ingrese el ID de la cita.")
 
 if __name__ == "__main__":
     # Configurando el título de la página

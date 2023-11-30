@@ -24,7 +24,7 @@ class AdministradorDB:
         self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, 7, fi, ff))
         self.con.commit()
         id_cita = self.cursor.lastrowid
-        sql = "INSERT INTO Estado (Cita_Asociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
+        sql = "INSERT INTO Estado (CitaAsociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
         self.cursor.execute(sql, (id_cita, 6, "", fi, profesional))
         self.con.commit()
 
@@ -36,7 +36,7 @@ class AdministradorDB:
 
     # Método para registrar los estados de una cita con base a su id base de datos
     def consultar_estados(self, id):
-        estados = self.cursor.execute("SELECT * FROM Estado WHERE Cita_Asociada=?", (id,)).fetchall()
+        estados = self.cursor.execute("SELECT * FROM Estado WHERE CitaAsociada=?", (id,)).fetchall()
         return estados
 
     # Método para consultar todos los profesionales de salud
@@ -110,31 +110,21 @@ class AdministradorDB:
         self.cursor.execute('UPDATE Cita SET Estado = ? WHERE ID = ?', (1, id_cita))
         self.con.commit()
 
-    # Método para modificar el paciente de una cita con base en su id
-    def modificar_estado(self, id_cita, modific):
-        self.cursor.execute('UPDATE Cita SET Estado = ? WHERE ID = ?', (modific, id_cita))
+    # Método para modificar una cita por ID.
+    def modificacion_general(self, id_cita, paciente, instalacion, profesional, tipo, estado, fi, ff, t_modificacion):
+
+        sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, \
+        FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, estado, fi, ff))
         self.con.commit()
 
-    # Método para modificar el paciente de una cita con base en su id y en el id del paciente
-    def modifciar_paciente_cita(self, id_cita, paciente):
-        self.cursor.execute('UPDATE Cita SET PacienteAsociado = ? WHERE ID = ?', (paciente, id_cita))
+        sql = "INSERT INTO Estado (CitaAsociada, Tipo, Detalle, Fecha, Autor) VALUES (?, ?, ?, ?, ?)"
+        self.cursor.execute(sql, (id_cita, 2, "Cita Modificada.", t_modificacion, profesional))
         self.con.commit()
 
-    # Método para modificar la instalación de una cita con base en su id y en el id de la instalación
-    def modifciar_instalacion_cita(self, id_cita, instalacion):
-        self.cursor.execute('UPDATE Cita SET InstalacionAsociada = ? WHERE ID = ?',
-                            (instalacion, id_cita))
-        self.con.commit()
-
-    # Método para modificar el tipo de una cita con base en su id
-    def modifciar_tipo_cita(self, id_cita, tipo):
-        self.cursor.execute('UPDATE Cita SET Tipo = ? WHERE ID = ?', (tipo, id_cita))
-        self.con.commit()
-
-    # Método para modificar la fecha de una cita con base en su id
-    def modifciar_fecha_cita(self, id_cita, fechaIn, fechaOut):
-        self.cursor.execute('UPDATE Cita SET FechaInicio = ?, FechaFinalizacion = ? WHERE ID = ?',
-                            (fechaIn, fechaOut, id_cita))
+        self.cursor.execute('UPDATE Cita SET PacienteAsociado = ?, InstalacionAsociada = ?,'
+                            'Tipo = ?, Estado = ?, FechaInicio = ?, FechaFinalizacion = ? WHERE ID = ?',
+                            (paciente, instalacion, tipo, 2, fi, ff, id_cita))
         self.con.commit()
 
     # Método para cerrar la conexión con la base de datos
