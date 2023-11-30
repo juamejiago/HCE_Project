@@ -56,6 +56,7 @@ class AdministradorDB:
 
         # Método para consultar todas las citas
 
+    # Método para consultar todas las citas
     def consultar_citas(self):
         rows = self.cursor.execute("SELECT * FROM Cita").fetchall()
         return rows
@@ -112,7 +113,6 @@ class AdministradorDB:
 
     # Método para modificar una cita por ID.
     def modificacion_general(self, id_cita, paciente, instalacion, profesional, tipo, estado, fi, ff, t_modificacion):
-
         sql = "INSERT INTO Cita (PacienteAsociado, InstalacionAsociada, ProfesionalSaludAsociado, Tipo, Estado, \
         FechaInicio, FechaFinalizacion) VALUES (?, ?, ?, ?, ?, ?, ?)"
         self.cursor.execute(sql, (paciente, instalacion, profesional, tipo, estado, fi, ff))

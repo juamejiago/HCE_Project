@@ -19,6 +19,7 @@ class Paciente:
     def disponibilidad_paciente(self,paciente, fecha, hi, hf):
         admin=AdministradorDB()
         ocupados = admin.consultar_horario_cita_por_paciente(paciente)
+        admin.cerrar_conexion_db()
         fecha = fecha.strftime("%Y-%m-%d")
         hi = hi.strftime("%H:%M")
         hf = hf.strftime("%H:%M")

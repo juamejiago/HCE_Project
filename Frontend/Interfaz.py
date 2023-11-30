@@ -265,6 +265,8 @@ def asignar_cita():
 
                     tipo = next((t.value for t in TipoCita if t.name.replace('_', ' ').title() == tipo), None)
                     admin.crear_cita(paciente, instalacion, profesional, tipo, fechaInicio, fechaFin)
+                    admin.cerrar_conexion_db()
+
                     st.success('Cita agregada exitosamente.')
                 if PSdispo == False:
                     st.error("El profesional no tiene esa fecha disponible")
@@ -304,6 +306,8 @@ def monitorear_cita():
                         st.write("Estados")
                         admin = AdministradorDB()
                         estados = admin.consultar_estados(cita[0])
+                        admin.cerrar_conexion_db()
+
                         for estado in estados:
                             tipo = EstadoCita(estado[2]).name
                             fecha = estado[4]
@@ -373,6 +377,9 @@ def modificar_cita():
                             st.error("El paciente no tiene esa fecha disponible")
                         if Idispo == False:
                             st.error("La instalacion no tiene esa fecha disponible")
+
+                        instancia.cerrar_conexion_db()
+
         else:
             st.error("Ingrese el ID de la cita.")
 
