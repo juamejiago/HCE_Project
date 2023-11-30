@@ -90,19 +90,19 @@ class AdministradorDB:
     # Método para consultar los horarios de cita que tiene agendado un profesional de salud
     def consultar_horario_cita_por_profsalud(self, id_for):
         rows = self.cursor.execute(
-            'SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE ProfesionalSaludAsociado = ? AND Estado=7',
+            'SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE ProfesionalSaludAsociado = ? AND (Estado = 7 OR Estado=6)',
             (id_for,)).fetchall()
         return rows
 
     # Método para consultar los horarios de cita que tiene agendado un paciente
     def consultar_horario_cita_por_paciente(self, id_for):
-        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE PacienteAsociado = ?',
+        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE PacienteAsociado = ? AND (Estado = 7 OR Estado=6)',
                                    (id_for,)).fetchall()
         return rows
 
     # Método para consultar los horarios de cita que tiene agendado una instalación
     def consultar_horario_cita_por_instalacion(self, id_for):
-        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE InstalacionAsociada = ?',
+        rows = self.cursor.execute('SELECT FechaInicio, FechaFinalizacion FROM Cita WHERE InstalacionAsociada = ? AND (Estado = 7 OR Estado=6)',
                                    (id_for,)).fetchall()
         return rows
 
