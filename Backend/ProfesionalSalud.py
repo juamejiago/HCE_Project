@@ -15,7 +15,7 @@ class ProfesionalSalud:
     def set_id(self, id):
         self._id = id
     @classmethod
-    def disponibilidad_profesional(self,profesional, fecha, hi, hf):
+    def disponibilidad_profesional(self, profesional, fecha, hi, hf):
         admin=AdministradorDB()
         ocupados = admin.consultar_horario_cita_por_profsalud(profesional)
         fecha = fecha.strftime("%Y-%m-%d")
