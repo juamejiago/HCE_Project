@@ -188,9 +188,11 @@ def mostrar_inicio_sesion():
                     st.error("Usuario o contraseña incorrectos.")
 
 
+# Mostrar menú general de citas
 def menu_cita():
     with menucitaSection:
-        st.markdown("# Menú de citas 📅")
+        st.markdown("# Administración de citas 📅")
+        st.markdown("> Anímate a utilizar nuestro sistema para gestionar tus citas :sunglasses:")
 
         # Botones en la página de menú de citas
         if st.button("Agendar"):
@@ -217,11 +219,13 @@ def menu_cita():
             st.session_state["menucitain"] = False
             st.session_state["monitoreoin"] = False
             st.session_state["asignarin"] = False
+            st.session_state["modificarin"] = False
 
             # Recarga el código
             st.rerun()
 
 
+# Mostrar interfaz de asignación de citas
 def asignar_cita():
     with asignarSection:
         if st.session_state["asignarin"]:
@@ -270,6 +274,7 @@ def asignar_cita():
                     st.error("La instalacion no tiene esa fecha disponible")
 
 
+# Mostrar interfaz de monitoreo de citas
 def monitorear_cita():
     with monitoreoSection:
         st.title("Buscador de Citas")
@@ -281,7 +286,7 @@ def monitorear_cita():
 
                 admin = AdministradorDB()
                 cita = admin.consultar_cita(search_query)
-                if len(cita)==0:
+                if len(cita) == 0:
                     st.error(f"No existe una cita relacionada con el ID {search_query}")
                 else:
 
@@ -291,10 +296,11 @@ def monitorear_cita():
                         fecha1 = cita[6]
                         fecha2 = cita[7]
                         tipo = TipoCita(cita[4]).name
-                        st.write(f"La cita con código de identificación C{cita[0]} se encuentra en estado actual {estado}"
-                                 f" y se programo con fecha de inicio  {fecha1} y fecha de finalización {fecha2} para el"
-                                 f" paciente con ID {cita[1]}. El tipo de esta cita corresponde a una {tipo} y tiene asignada"
-                                 f" la instalación con ID {cita[2]} con el profesional de salud con ID {cita[3]}.")
+                        st.write(
+                            f"La cita con código de identificación C{cita[0]} se encuentra en estado actual {estado}"
+                            f" y se programo con fecha de inicio  {fecha1} y fecha de finalización {fecha2} para el"
+                            f" paciente con ID {cita[1]}. El tipo de esta cita corresponde a una {tipo} y tiene asignada"
+                            f" la instalación con ID {cita[2]} con el profesional de salud con ID {cita[3]}.")
                         st.write("Estados")
                         admin = AdministradorDB()
                         estados = admin.consultar_estados(cita[0])
@@ -305,6 +311,8 @@ def monitorear_cita():
         else:
             st.error("Ingresar Id de la cita.")
 
+
+# Mostrar interfaz de modificación de citas
 def modificar_cita():
     with modificacionSection:
         instancia = AdministradorDB()
@@ -312,7 +320,7 @@ def modificar_cita():
         search_query = st.text_input("Ingrese el id de la cita:")
         if search_query:
             cita = instancia.consultar_cita(search_query)
-            if len(cita)==0:
+            if len(cita) == 0:
                 st.error(f"No existe una cita relacionada con el ID {search_query}")
             else:
                 if cita:
@@ -353,18 +361,21 @@ def modificar_cita():
                             now = datetime.now()
                             t_modificacion = now.strftime("%Y-%m-%d %H:%M")
                             tipo = next((t.value for t in TipoCita if t.name.replace('_', ' ').title() == tipo), None)
-                            estado = next((e.value for e in EstadoCita if e.name.replace('_', ' ').title() == estado), None)
-                            print(id_cita,paciente,instalacion,profesional,tipo,estado,
-                                                           fechaInicio,fechaFin,t_modificacion)
-                            instancia.modificacion_general(id_cita,paciente,instalacion,profesional,tipo,estado,
-                                                           fechaInicio,fechaFin,t_modificacion)
+                            estado = next((e.value for e in EstadoCita if e.name.replace('_', ' ').title() == estado),
+                                          None)
+                            print(id_cita, paciente, instalacion, profesional, tipo, estado,
+                                  fechaInicio, fechaFin, t_modificacion)
+                            instancia.modificacion_general(id_cita, paciente, instalacion, profesional, tipo, estado,
+                                                           fechaInicio, fechaFin, t_modificacion)
                             st.success('Cita modificada exitosamente.')
 
                         if Pdispo == False:
                             st.error("El paciente no tiene esa fecha disponible")
                         if Idispo == False:
                             st.error("La instalacion no tiene esa fecha disponible")
-        else: st.error("Ingrese el ID de la cita.")
+        else:
+            st.error("Ingrese el ID de la cita.")
+
 
 if __name__ == "__main__":
     # Configurando el título de la página
