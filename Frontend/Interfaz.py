@@ -330,7 +330,7 @@ class Interfaz():
                     if cita:
                         cita = cita[0]
 
-                        id_cita, profesional = cita[0], cita[3]
+                        id_cita = cita[0]
 
                         pacientes = [tupla[0] for tupla in instancia.consultar_pacientes()]
                         profesionales = [tupla[0] for tupla in instancia.consultar_profesionales_salud()]
@@ -341,6 +341,7 @@ class Interfaz():
                         # Desplegables para seleccionar paciente, profesional e instalación
                         paciente = st.selectbox('Seleccione Paciente', pacientes,index=pacientes.index(cita[1]))
                         instalacion = st.selectbox('Seleccione Instalación', instalaciones, index=instalaciones.index(cita[2]))
+                        profesional = st.selectbox('Seleccione Profesional', profesionales, index=profesionales.index(cita[3]))
                         tipo = st.selectbox('Tipo de Cita', opciones_tipo_cita, index=cita[4]-1)
                         estado = st.selectbox('Seleccione el estado a modificar de la cita', estados)
 
@@ -354,8 +355,11 @@ class Interfaz():
 
                             Pdispo = Paciente.disponibilidad_paciente(paciente, fecha, hora_inicio, hora_fin)
                             Idispo = Instalacion.disponibilidad_instalacion(instalacion, fecha, hora_inicio, hora_fin)
+                            PSdispo = ProfesionalSalud.disponibilidad_profesional(profesional, fecha, hora_inicio,
+                                                                                  hora_fin)
 
-                            if Pdispo and Idispo:
+
+                            if Pdispo and Idispo and PSdispo:
                                 fecha = fecha.strftime("%Y-%m-%d")
                                 hora_inicio = hora_inicio.strftime("%H:%M")
                                 hora_fin = hora_fin.strftime("%H:%M")
@@ -377,6 +381,9 @@ class Interfaz():
                                 st.error("El paciente no tiene esa fecha disponible")
                             if Idispo == False:
                                 st.error("La instalacion no tiene esa fecha disponible")
+                            if PSdispo == False:
+                                st.error("El profesional no tiene esa fecha disponible")
+
 
                             instancia.cerrar_conexion_db()
 
